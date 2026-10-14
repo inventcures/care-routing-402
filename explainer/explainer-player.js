@@ -238,13 +238,13 @@
       if (!captionsOn || !captionTrack) return;
       var active = captionTrack.activeCues;
       cues.textContent = '';
-      if (!active) return;
-      for (var i = 0; i < active.length; i++) {
-        var span = el('span');
-        span.textContent = active[i].text.replace(/<[^>]+>/g, '');
-        cues.append(span);
-        if (i < active.length - 1) cues.append(document.createElement('br'));
-      }
+      if (!active || !active.length) return;
+      // Back-to-back cues may overlap by a few frames; show only the newest so lines do not stack.
+      var latest = active[0];
+      for (var i = 1; i < active.length; i++) if (active[i].startTime > latest.startTime) latest = active[i];
+      var span = el('span');
+      span.textContent = latest.text.replace(/<[^>]+>/g, '');
+      cues.append(span);
       if (panel && !panel.hidden) highlightTranscript();
     }
 
